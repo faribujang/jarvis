@@ -1,0 +1,7 @@
+# tools/requirements.txt — Python deps for the Jarvis tools layer.
+# STARTER — Claude Code may pin versions, split dev/runtime, or add feed/data libs
+# (e.g. requests, praw, feedparser) as it wires real tools in later phases.
+
+litellm         # provider-agnostic LLM interface (Layer B)
+pyyaml          # read config/providers.yaml
+python-dotenv   # load API keys from .env

@@ -1,0 +1,9 @@
+# dashboard/requirements.txt — Jarvis dashboard (FastAPI + custom frontend)
+# Install from the repo root:  pip install -r dashboard/requirements.txt
+fastapi
+uvicorn
+pyyaml
+python-dotenv
+# litellm powers chat + AI briefs. Without it (or without a key), the dashboard
+# still runs in offline mode: brief, journal, capture, and memory all work.
+litellm

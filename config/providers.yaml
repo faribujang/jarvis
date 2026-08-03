@@ -1,0 +1,45 @@
+# config/providers.yaml — inference provider layer (Layer B)
+# =============================================================================
+# STARTER CONFIG — Claude Code may update, extend, or restructure this file as it
+# sees fit during scaffolding (add providers, change model names/params, adjust
+# routing). Keep the core contract: tools/llm.py reads `active` to decide which
+# entry under `providers` to use. Anything that makes a direct model call from a
+# tool or skill must go through this layer — never hardcode a provider elsewhere.
+# =============================================================================
+
+# Which provider entry is currently active. Change this one line to switch models.
+active: gemini
+
+providers:
+  # ---- Default: Gemini 2.5 Flash (Fakhri's free/cheap Google key) ----
+  gemini:
+    model: gemini/gemini-2.5-flash      # LiteLLM model string
+    api_key_env: GEMINI_API_KEY         # read from .env — never inline the key
+    # temperature: 0.7                  # optional; uncomment to override defaults
+    # max_tokens: 1024
+
+  # ---- Open-source via OpenRouter (Qwen / Kimi) — flip `active` above, zero code change ----
+  # Proves the Layer-B contract: switching to an open-source model is one line, no code edit.
+  qwen:
+    model: openrouter/qwen/qwen-2.5-72b-instruct
+    api_key_env: OPENROUTER_API_KEY
+
+  kimi:
+    model: openrouter/moonshotai/kimi-k2
+    api_key_env: OPENROUTER_API_KEY
+
+  # ---- Self-hosted Qwen via Ollama (no API key, runs on your box or a Docker host) ----
+  # `python tools/llm.py` will report "no API key required" when this is active — the same
+  # entry works whether Ollama runs on localhost or a hosted Docker container (change api_base).
+  ollama-qwen:
+    model: ollama/qwen2.5
+    api_base: http://localhost:11434   # default Ollama endpoint; point at a hosted box later
+  #
+  # ---- Optional: Anthropic direct (if ever calling Claude from a tool) ----
+  # claude:
+  #   model: anthropic/claude-sonnet-4-5
+  #   api_key_env: ANTHROPIC_API_KEY
+
+# NOTE: model strings follow LiteLLM's "<provider>/<model>" convention. Verify exact
+# current model names when wiring — Claude Code should confirm/adjust these at build
+# time rather than trusting the placeholders above.

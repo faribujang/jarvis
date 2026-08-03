@@ -1,0 +1,37 @@
+# Secrets — never commit real keys.
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Tool scratch — keep the directory, ignore its contents.
+cache/*
+!cache/.gitkeep
+
+# Streamlit
+.streamlit/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+
+# Reference material (large images/PDFs)
+references/
+
+# Private working data — real memory snapshot + internal notes (never public)
+_private/
+
+# Pasted session/history dumps
+*caveatcaveat*.md
+
+# Personal daily journals stay local — only the EXAMPLE ships in the public repo.
+memory/journal/*.md
+!memory/journal/2026-01-15.md
+!memory/journal/.gitkeep
+
+# Local Claude Code settings (per-machine; not for the public repo)
+.claude/settings.local.json

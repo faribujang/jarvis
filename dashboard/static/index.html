@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Jarvis</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <!-- PWA: installable on desktop + phone, one codebase -->
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#06080a" />
+  <link rel="icon" type="image/png" href="/static/icons/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Jarvis" />
+</head>
+<body>
+  <div id="app">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="dot pulse"></span>
+        <span class="brand-name">JARVIS</span>
+        <span class="brand-ver">// v1</span>
+      </div>
+      <nav class="nav" id="nav">
+        <button class="nav-item active" data-view="home">HOME</button>
+        <button class="nav-item" data-view="chat">CHAT</button>
+        <button class="nav-item" data-view="journal">JOURNAL</button>
+        <button class="nav-item" data-view="memory">MEMORY</button>
+      </nav>
+      <div class="topbar-right">
+        <button id="density-toggle" class="density-btn" title="Toggle Focus / Full density">◱ FULL</button>
+        <span id="clock" class="clock">--:--:--</span>
+        <span id="topdate" class="topdate">—</span>
+        <span id="statuschip" class="chip chip-muted">···</span>
+      </div>
+    </header>
+
+    <!-- Views -->
+    <main class="stage">
+      <!-- HOME -->
+      <section class="view view-home active" id="view-home">
+        <div class="bento">
+          <!-- Operator -->
+          <div class="card card-operator" id="card-operator">
+            <div class="card-label" title="Who you are, plus your journaling streak and last-7-days activity."><span class="cl-head"><span class="cl-num">01 // </span>OPERATOR</span> <span class="online">● ONLINE</span></div>
+            <div class="operator-body">
+              <div class="avatar">F</div>
+              <div>
+                <div class="operator-name" id="op-name">Fakhri</div>
+                <div class="operator-role" id="op-role">Software Engineer</div>
+              </div>
+            </div>
+            <div class="operator-stats">
+              <div><div class="stat-label">FOCUS</div><div class="stat-val" id="op-focus">—</div></div>
+              <div><div class="stat-label">STREAK</div><div class="stat-val"><span id="op-streak">0</span> <span class="stat-unit">days</span></div></div>
+            </div>
+            <div class="spark-wrap">
+              <div class="stat-label">7-DAY ACTIVITY</div>
+              <div class="spark" id="spark"></div>
+            </div>
+          </div>
+
+          <!-- Session / greeting + capture -->
+          <div class="card card-session" id="card-session">
+            <div class="card-label" title="Today at a glance. The ring = your 3 daily actions done (brief · capture · debrief). Capture a thought below; the buttons jump to brief/chat/debrief."><span class="cl-head"><span class="cl-num">02 // </span>SESSION</span> <span class="session-momentum-lbl">TODAY'S MOMENTUM</span></div>
+
+            <!-- Hero clock — the calm focal point (focus mode only) -->
+            <div class="hero" aria-hidden="false">
+              <div class="hero-clock"><span id="hero-clock">--:--</span><span class="hero-secs" id="hero-secs">00</span></div>
+            </div>
+
+            <div class="session-head">
+              <div>
+                <div class="session-greet" id="greeting">Good morning, <em>Fakhri</em>.</div>
+                <div class="session-date" id="session-date">—</div>
+              </div>
+              <div class="momentum" id="momentum">
+                <div class="momentum-ring" id="momentum-ring">
+                  <span class="momentum-num" id="momentum-num">0<small>/3</small></span>
+                </div>
+                <div class="momentum-legend" id="momentum-legend"></div>
+              </div>
+            </div>
+            <form class="capture" id="capture-form">
+              <span class="capture-icon">⌘</span>
+              <input id="capture-input" class="capture-input" placeholder="Capture a thought, idea, open loop…" autocomplete="off" />
+              <button class="capture-btn" type="submit">CAPTURE ▸</button>
+            </form>
+            <div class="capture-hint" id="capture-hint"></div>
+
+            <div class="quick-actions">
+              <button class="qa" data-action="brief"><span class="qa-ico">◆</span> Generate brief</button>
+              <button class="qa" data-action="chat"><span class="qa-ico">✦</span> Ask Jarvis</button>
+              <button class="qa" data-action="debrief"><span class="qa-ico">☾</span> Debrief day</button>
+            </div>
+          </div>
+
+          <!-- Brief -->
+          <div class="card card-brief" id="card-brief">
+            <div class="card-label" title="Your morning brief — active projects and what matters today. Generate a fresh one anytime; with an API key it's AI-written from your journal."><span class="cl-head"><span class="cl-num">03 // </span>MORNING BRIEF</span> <button class="mini-btn" id="gen-brief">▸ GENERATE</button></div>
+            <div class="brief-body" id="brief-body">
+              <div class="empty-state">
+                <div class="empty-mark">◆</div>
+                <div class="empty-title">Start your day.</div>
+                <div class="empty-note">Hit <b>Generate</b> for today's brief — your projects and what matters.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Projects -->
+          <div class="card card-projects" id="card-projects">
+            <div class="card-label" title="Projects you're tracking — pulled from your durable memory (user-profile.md)."><span class="cl-head"><span class="cl-num">04 // </span>PROJECTS</span></div>
+            <div class="projects" id="projects-list"></div>
+          </div>
+
+          <!-- Today / journal -->
+          <div class="card card-today" id="card-today">
+            <div class="card-label" title="What you logged today. Open loops show as a checklist — check one off and it's marked done in your journal."><span class="cl-head"><span class="cl-num">05 // </span>TODAY</span></div>
+            <div class="today-body" id="today-body">
+              <div class="empty">Nothing logged today yet.</div>
+            </div>
+          </div>
+
+          <!-- Debrief -->
+          <div class="card card-debrief" id="card-debrief">
+            <div class="card-label" title="End-of-day recap — dump what happened, wins, and open loops. Saved to today's journal; with a key, Jarvis synthesizes it."><span class="cl-head"><span class="cl-num">06 // </span>EVENING DEBRIEF</span></div>
+            <textarea id="debrief-input" class="debrief-input" placeholder="What happened today? Wins, open loops, notes…"></textarea>
+            <button class="mini-btn full" id="save-debrief">SAVE RECAP ▸</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- CHAT -->
+      <section class="view view-chat" id="view-chat">
+        <div class="chat-wrap">
+          <button class="chat-clear" id="chat-clear" title="Clear conversation">CLEAR ✕</button>
+          <div class="chat-log" id="chat-log">
+            <div class="chat-empty" id="chat-empty">
+              <div class="chat-empty-orb"></div>
+              <div class="chat-empty-title">Talk to Jarvis</div>
+              <div class="chat-empty-sub">It already knows who you are.</div>
+            </div>
+          </div>
+          <form class="chat-input-bar" id="chat-form">
+            <input id="chat-input" class="chat-input" placeholder="Ask Jarvis anything…" autocomplete="off" />
+            <button class="chat-send" type="submit">▸</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- JOURNAL -->
+      <section class="view view-journal" id="view-journal">
+        <div class="journal-wrap">
+          <aside class="journal-dates" id="journal-dates"></aside>
+          <div class="journal-content-col">
+            <p class="view-sub">Your permanent day-by-day record — morning brief, captures, open loops, and evening recap, kept in full.</p>
+            <div class="journal-content" id="journal-content"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MEMORY -->
+      <section class="view view-memory" id="view-memory">
+        <div class="memory-wrap">
+          <div class="card-label">DURABLE MEMORY</div>
+          <p class="view-sub">What Jarvis durably knows about you — facts, preferences, and projects it carries across every session.</p>
+          <div id="memory-files" class="memory-files"></div>
+          <div class="card-label" style="margin-top:24px">SKILLS</div>
+          <p class="view-sub">Reusable procedures Jarvis can run.</p>
+          <div id="memory-skills" class="memory-skills"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- HUD status bar -->
+    <footer class="statusbar">
+      <span class="sb-left"><span class="dot pulse"></span> SYSTEM ONLINE</span>
+      <span class="sb-mid" id="sb-mid">~/jarvis</span>
+      <span class="sb-right"><span id="sb-model">—</span> · LAST SYNC <span id="sb-sync">--:--:--</span></span>
+    </footer>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
